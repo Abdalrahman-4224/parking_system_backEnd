@@ -1,40 +1,44 @@
 const { User } = require('../models');
-const OTP = require('../models/OTP');
+// TODO: Uncomment when OTP service is ready
+// const OTP = require('../models/OTP');
 const { generateToken } = require('../utils/jwt');
 
 const register = async (req, res, next) => {
   try {
     const { username, phoneNumber, password } = req.body;
 
+    // TODO: OTP VERIFICATION - Uncomment this block when SMS OTP service is ready
+    // ========================================================================
     // Step 1: Verify OTP first
-    const otpRecord = await OTP.findOne({
-      where: {
-        phoneNumber,
-        isUsed: true // OTP must be verified (marked as used)
-      },
-      order: [['createdAt', 'DESC']]
-    });
+    // const otpRecord = await OTP.findOne({
+    //   where: {
+    //     phoneNumber,
+    //     isUsed: true // OTP must be verified (marked as used)
+    //   },
+    //   order: [['createdAt', 'DESC']]
+    // });
+    //
+    // if (!otpRecord) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: 'Phone number not verified. Please verify your phone number with OTP first'
+    //   });
+    // }
+    //
+    // // Check if OTP verification is still valid (within 30 minutes)
+    // const otpAge = Date.now() - new Date(otpRecord.updatedAt).getTime();
+    // const maxOTPAge = 30 * 60 * 1000; // 30 minutes
+    //
+    // if (otpAge > maxOTPAge) {
+    //   await otpRecord.destroy();
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: 'OTP verification expired. Please verify your phone number again'
+    //   });
+    // }
+    // ========================================================================
 
-    if (!otpRecord) {
-      return res.status(400).json({
-        success: false,
-        message: 'Phone number not verified. Please verify your phone number with OTP first'
-      });
-    }
-
-    // Check if OTP verification is still valid (within 30 minutes)
-    const otpAge = Date.now() - new Date(otpRecord.updatedAt).getTime();
-    const maxOTPAge = 30 * 60 * 1000; // 30 minutes
-
-    if (otpAge > maxOTPAge) {
-      await otpRecord.destroy();
-      return res.status(400).json({
-        success: false,
-        message: 'OTP verification expired. Please verify your phone number again'
-      });
-    }
-
-    // Step 2: Check if user already exists
+    // Check if user already exists
     const existingUser = await User.findOne({
       where: {
         phoneNumber
@@ -48,17 +52,17 @@ const register = async (req, res, next) => {
       });
     }
 
-    // Step 3: Create user account
+    // Create user account
     const user = await User.create({
       username,
       phoneNumber,
       password
     });
 
-    // Step 4: Clean up used OTP
-    await otpRecord.destroy();
+    // TODO: OTP CLEANUP - Uncomment when OTP service is ready
+    // await otpRecord.destroy();
 
-    // Step 5: Generate JWT token
+    // Generate JWT token
     const token = generateToken({
       id: user.id,
       username: user.username

@@ -24,6 +24,14 @@ const getAllLocations = async (req, res, next) => {
     const locationsWithAvailability = locations.map(location => {
       const locationJSON = location.toJSON();
 
+      console.log(`[DEBUG] Processing ${locationJSON.name}`);
+      console.log(`[DEBUG] Has geoJson in DB? ${!!locationJSON.geoJson}`);
+      if (locationJSON.geoJson) {
+        console.log(`[DEBUG] geoJson type: ${typeof locationJSON.geoJson}`);
+      } else {
+        console.log(`[DEBUG] geoJson is MISSING/NULL in Model JSON`);
+      }
+
       const availableSpots = locationJSON.spots.filter(
         spot => spot.status === 'available'
       ).length;

@@ -8,48 +8,47 @@
 require('dotenv').config();
 const { sequelize } = require('../src/config/database');
 const { User, ParkingLocation, ParkingSpot, Booking } = require('../src/models');
+const fs = require('fs');
+const path = require('path');
 
+// Sample parking locations data
 // Sample parking locations data
 const parkingLocations = [
   {
-    name: 'Downtown Parking',
-    address: '123 Main Street',
-    city: 'New York',
-    latitude: 40.7128,
-    longitude: -74.0060,
-    totalSpots: 20
+    name: 'مواقف شارع الربيعي',
+    address: 'شارع الربيعي، زيونة، بغداد',
+    city: 'Baghdad',
+    latitude: 33.324393,
+    longitude: 44.450333,
+    totalSpots: 43,
+    jsonFile: 'al_rubei.json'
   },
   {
-    name: 'Airport Parking',
-    address: '456 Airport Road',
-    city: 'New York',
-    latitude: 40.6413,
-    longitude: -73.7781,
-    totalSpots: 30
+    name: 'مواقف المنصور',
+    address: 'شارع 14 رمضان، المنصور، بغداد',
+    city: 'Baghdad',
+    latitude: 33.315200,
+    longitude: 44.366100,
+    totalSpots: 100,
+    jsonFile: 'mansour.json'
   },
   {
-    name: 'Mall Parking Garage',
-    address: '789 Shopping Center',
-    city: 'New York',
-    latitude: 40.7580,
-    longitude: -73.9855,
-    totalSpots: 50
+    name: 'مواقف اليرموك',
+    address: 'اليرموك 4 شوارع، بغداد',
+    city: 'Baghdad',
+    latitude: 33.303000,
+    longitude: 44.335000,
+    totalSpots: 50,
+    jsonFile: 'yarmouk.json'
   },
   {
-    name: 'Central Station Parking',
-    address: '100 Station Plaza',
-    city: 'New York',
-    latitude: 40.7527,
-    longitude: -73.9772,
-    totalSpots: 25
-  },
-  {
-    name: 'Beach Side Parking',
-    address: '200 Ocean Drive',
-    city: 'New York',
-    latitude: 40.5731,
-    longitude: -73.9712,
-    totalSpots: 15
+    name: 'حي الجامعة',
+    address: 'شارع الربيع، حي الجامعة، بغداد',
+    city: 'Baghdad',
+    latitude: 33.334000,
+    longitude: 44.325000,
+    totalSpots: 50,
+    jsonFile: 'hai_al_jamia.json'
   }
 ];
 
@@ -135,8 +134,24 @@ async function seedDatabase() {
     // Create parking locations
     console.log('🏢 Creating parking locations...');
     const createdLocations = [];
+    const dataDir = path.join(__dirname, 'data');
 
     for (const locationData of parkingLocations) {
+      // Read GeoJSON if available
+      if (locationData.jsonFile) {
+        try {
+          const filePath = path.join(dataDir, locationData.jsonFile);
+          if (fs.existsSync(filePath)) {
+            const rawData = fs.readFileSync(filePath, 'utf8');
+            locationData.geoJson = JSON.parse(rawData);
+            console.log(`   Found GeoJSON for ${locationData.name}`);
+          }
+        } catch (e) {
+          console.error(`   Failed to read GeoJSON for ${locationData.name}: ${e.message}`);
+        }
+        delete locationData.jsonFile; // Remove from object so Sequelize doesn't complain
+      }
+
       const location = await ParkingLocation.create(locationData);
       createdLocations.push(location);
       console.log(`   ✅ Created: ${location.name}`);

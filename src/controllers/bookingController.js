@@ -47,7 +47,7 @@ const createBooking = async (req, res, next) => {
       totalAmount,
       paymentMethod,
       vehicleNumber,
-      paymentStatus: paymentMethod === 'cash' ? 'pending' : 'pending',
+      paymentStatus: 'completed', // FAKE PAYMENT: Always completed
       bookingStatus: 'active'
     }, { transaction });
 

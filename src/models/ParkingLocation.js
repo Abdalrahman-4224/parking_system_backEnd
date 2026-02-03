@@ -32,6 +32,10 @@ const ParkingLocation = sequelize.define('ParkingLocation', {
     allowNull: false,
     defaultValue: 0
   },
+  geoJson: {
+    type: DataTypes.JSONB,
+    allowNull: true
+  },
   isActive: {
     type: DataTypes.BOOLEAN,
     defaultValue: true

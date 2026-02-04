@@ -53,35 +53,30 @@ const parkingLocations = [
 ];
 
 // Generate parking spots for a location
-function generateSpots(locationId, totalSpots, sections = ['A', 'B', 'C']) {
+// Generate parking spots for a location
+function generateSpots(locationId, totalSpots) {
   const spots = [];
-  let spotCount = 0;
-  const spotsPerSection = Math.ceil(totalSpots / sections.length);
 
-  for (const section of sections) {
-    for (let i = 1; i <= spotsPerSection && spotCount < totalSpots; i++) {
-      const spotNumber = `${section}-${String(i).padStart(3, '0')}`;
+  for (let i = 1; i <= totalSpots; i++) {
+    const spotNumber = String(i);
 
-      // Randomly set some spots as occupied for testing
-      const randomStatus = Math.random();
-      let status = 'available';
-      if (randomStatus < 0.3) status = 'occupied';
-      else if (randomStatus < 0.35) status = 'reserved';
-      else if (randomStatus < 0.38) status = 'maintenance';
+    // Randomly set some spots as occupied for testing
+    const randomStatus = Math.random();
+    let status = 'available';
+    if (randomStatus < 0.3) status = 'occupied';
+    else if (randomStatus < 0.35) status = 'reserved';
+    else if (randomStatus < 0.38) status = 'maintenance';
 
-      // Random hourly rate between 3 and 10
-      const hourlyRate = (Math.floor(Math.random() * 8) + 3).toFixed(2);
+    // Random hourly rate between 3 and 10
+    const hourlyRate = (Math.floor(Math.random() * 8) + 3).toFixed(2);
 
-      spots.push({
-        spotNumber,
-        locationId,
-        status,
-        hourlyRate,
-        isActive: true
-      });
-
-      spotCount++;
-    }
+    spots.push({
+      spotNumber,
+      locationId,
+      status,
+      hourlyRate,
+      isActive: true
+    });
   }
 
   return spots;

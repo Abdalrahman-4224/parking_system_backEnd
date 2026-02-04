@@ -15,8 +15,8 @@ const createBookingValidator = [
     .isFloat({ min: 0.5, max: 24 })
     .withMessage('Duration must be between 0.5 and 24 hours'),
   body('paymentMethod')
-    .isIn(['card', 'cash'])
-    .withMessage('Payment method must be either card or cash'),
+    .isIn(['card', 'cash', 'mastercard', 'visa', 'zaincash'])
+    .withMessage('Invalid payment method'),
   body('vehicleNumber')
     .optional()
     .trim()

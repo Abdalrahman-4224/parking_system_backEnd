@@ -55,6 +55,7 @@ const getAllLocations = async (req, res, next) => {
         longitude: locationJSON.longitude,
         totalSpots: locationJSON.totalSpots,
         geoJson: locationJSON.geoJson,
+        zoneGeoJson: locationJSON.zoneGeoJson, // <--- Add this
         availableSpots,
         occupiedSpots,
         occupancyRate,
@@ -220,9 +221,9 @@ const getNearbyLocations = async (req, res, next) => {
         city: locationJSON.city,
         latitude: locationJSON.latitude,
         longitude: locationJSON.longitude,
-        longitude: locationJSON.longitude,
         totalSpots: locationJSON.totalSpots,
         geoJson: locationJSON.geoJson,
+        zoneGeoJson: locationJSON.zoneGeoJson,
         availableSpots,
         occupiedSpots,
         occupancyRate,

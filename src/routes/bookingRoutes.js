@@ -5,7 +5,8 @@ const {
   getUserBookings,
   getBookingById,
   completeBooking,
-  cancelBooking
+  cancelBooking,
+  extendBooking
 } = require('../controllers/bookingController');
 const { createBookingValidator, validate } = require('../validators/bookingValidator');
 const { authenticate } = require('../middleware/auth');
@@ -15,5 +16,6 @@ router.get('/', authenticate, getUserBookings);
 router.get('/:id', authenticate, getBookingById);
 router.patch('/:id/complete', authenticate, completeBooking);
 router.patch('/:id/cancel', authenticate, cancelBooking);
+router.patch('/:id/extend', authenticate, extendBooking);
 
 module.exports = router;

@@ -259,10 +259,76 @@ const cancelBooking = async (req, res, next) => {
   }
 };
 
+const extendBooking = async (req, res, next) => {
+  const transaction = await sequelize.transaction();
+
+  try {
+    const { id } = req.params;
+    const { additionalHours } = req.body;
+    const userId = req.user.id;
+
+    if (!additionalHours || additionalHours <= 0) {
+      await transaction.rollback();
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid additional hours'
+      });
+    }
+
+    const booking = await Booking.findOne({
+      where: { id, userId },
+      include: [{ model: ParkingSpot, as: 'spot' }],
+      lock: transaction.LOCK.UPDATE,
+      transaction
+    });
+
+    if (!booking) {
+      await transaction.rollback();
+      return res.status(404).json({
+        success: false,
+        message: 'Booking not found'
+      });
+    }
+
+    if (booking.bookingStatus !== 'active') {
+      await transaction.rollback();
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot extend a non-active booking'
+      });
+    }
+
+    // Update End Time
+    const currentEndTime = new Date(booking.endTime);
+    const newEndTime = new Date(currentEndTime.getTime() + additionalHours * 60 * 60 * 1000);
+    booking.endTime = newEndTime;
+    booking.durationHours += additionalHours;
+
+    // Update Cost (using rate from first snapshot or current spot rate)
+    // Assuming spot.hourlyRate is available via include
+    const spotRate = booking.spot.hourlyRate || 1000;
+    const additionalCost = spotRate * additionalHours;
+    booking.totalAmount = (parseFloat(booking.totalAmount) + additionalCost).toFixed(2);
+
+    await booking.save({ transaction });
+    await transaction.commit();
+
+    res.status(200).json({
+      success: true,
+      message: 'Booking extended successfully',
+      data: booking
+    });
+  } catch (error) {
+    await transaction.rollback();
+    next(error);
+  }
+};
+
 module.exports = {
   createBooking,
   getUserBookings,
   getBookingById,
   completeBooking,
-  cancelBooking
+  cancelBooking,
+  extendBooking
 };

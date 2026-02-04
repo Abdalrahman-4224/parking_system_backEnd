@@ -20,7 +20,7 @@ const parkingLocations = [
     city: 'Baghdad',
     latitude: 33.324393,
     longitude: 44.450333,
-    totalSpots: 43,
+    totalSpots: 10000,
     jsonFile: 'al_rubei.json'
   },
   {
@@ -29,7 +29,7 @@ const parkingLocations = [
     city: 'Baghdad',
     latitude: 33.315200,
     longitude: 44.366100,
-    totalSpots: 100,
+    totalSpots: 10000,
     jsonFile: 'mansour.json'
   },
   {
@@ -38,7 +38,7 @@ const parkingLocations = [
     city: 'Baghdad',
     latitude: 33.303000,
     longitude: 44.335000,
-    totalSpots: 50,
+    totalSpots: 10000,
     jsonFile: 'yarmouk.json'
   },
   {
@@ -47,7 +47,7 @@ const parkingLocations = [
     city: 'Baghdad',
     latitude: 33.334000,
     longitude: 44.325000,
-    totalSpots: 50,
+    totalSpots: 10000,
     jsonFile: 'hai_al_jamia.json'
   }
 ];

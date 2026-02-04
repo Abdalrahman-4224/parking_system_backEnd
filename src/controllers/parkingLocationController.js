@@ -65,7 +65,8 @@ const getAllLocations = async (req, res, next) => {
         },
         isActive: locationJSON.isActive,
         createdAt: locationJSON.createdAt,
-        updatedAt: locationJSON.updatedAt
+        updatedAt: locationJSON.updatedAt,
+        spots: locationJSON.spots // <--- CRITICAL: Include spots list for map coloring
       };
     });
 
@@ -111,7 +112,8 @@ const getLocationById = async (req, res, next) => {
       data: {
         ...location.toJSON(),
         availableSpots,
-        occupiedSpots: location.totalSpots - availableSpots
+        occupiedSpots: location.totalSpots - availableSpots,
+        spots: location.spots // <--- CRITICAL: Include spots list
       }
     });
   } catch (error) {
@@ -229,7 +231,8 @@ const getNearbyLocations = async (req, res, next) => {
           max: maxRate,
           currency: 'USD'
         },
-        isActive: locationJSON.isActive
+        isActive: locationJSON.isActive,
+        spots: locationJSON.spots // <--- CRITICAL: Include spots list
       };
     });
 

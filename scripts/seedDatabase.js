@@ -53,19 +53,15 @@ const parkingLocations = [
 ];
 
 // Generate parking spots for a location
-// Generate parking spots for a location
+
 function generateSpots(locationId, totalSpots) {
   const spots = [];
 
   for (let i = 1; i <= totalSpots; i++) {
     const spotNumber = String(i);
 
-    // Randomly set some spots as occupied for testing
-    const randomStatus = Math.random();
-    let status = 'available';
-    if (randomStatus < 0.3) status = 'occupied';
-    else if (randomStatus < 0.35) status = 'reserved';
-    else if (randomStatus < 0.38) status = 'maintenance';
+    // All spots are initially available
+    const status = 'available';
 
     // Random hourly rate between 3 and 10
     const hourlyRate = (Math.floor(Math.random() * 8) + 3).toFixed(2);

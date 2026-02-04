@@ -1,5 +1,6 @@
 const { Booking, ParkingSpot, ParkingLocation, User } = require('../models');
 const { sequelize } = require('../config/database');
+const { createNotification } = require('./notificationController');
 
 const createBooking = async (req, res, next) => {
   const transaction = await sequelize.transaction();
@@ -55,6 +56,13 @@ const createBooking = async (req, res, next) => {
     await spot.save({ transaction });
 
     await transaction.commit();
+
+    // Create Notification Async (don't await to not block response)
+    createNotification(
+      userId,
+      'تم تأكيد حجزك بنجاح ✅',
+      `تم حجز الموقف رقم ${spotNumber} لمدة ${durationHours} ساعة.`
+    );
 
     const bookingWithDetails = await Booking.findByPk(booking.id, {
       include: [
@@ -312,6 +320,13 @@ const extendBooking = async (req, res, next) => {
 
     await booking.save({ transaction });
     await transaction.commit();
+
+    // Create Notification Async
+    createNotification(
+      userId,
+      'تم تمديد الحجز ⏳',
+      `تم تمديد حجزك لمدة ${additionalHours} ساعة إضافية.`
+    );
 
     res.status(200).json({
       success: true,

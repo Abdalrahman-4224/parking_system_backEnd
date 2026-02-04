@@ -11,6 +11,45 @@ const { User, ParkingLocation, ParkingSpot, Booking } = require('../src/models')
 const fs = require('fs');
 const path = require('path');
 
+// --- Helper Functions for Dynamic Spot Calculation ---
+function deg2rad(deg) { return deg * (Math.PI / 180); }
+
+function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
+  var R = 6371000; // Radius of the earth in m
+  var dLat = deg2rad(lat2 - lat1);
+  var dLon = deg2rad(lon2 - lon1);
+  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function calculateTotalSpots(geoJson) {
+  if (!geoJson || !geoJson.features) return 0;
+  let total = 0;
+  const spotWidthMeters = 3.0;
+  const angleDegrees = 60.0;
+  const angleRadians = angleDegrees * Math.PI / 180;
+  const spotFootprint = spotWidthMeters / Math.sin(angleRadians); // ~3.46
+
+  geoJson.features.forEach(feature => {
+    if (feature.geometry.type === 'LineString') {
+      const coords = feature.geometry.coordinates;
+      let lineLength = 0;
+      for (let i = 0; i < coords.length - 1; i++) {
+        // GeoJSON is [lon, lat]
+        lineLength += getDistanceFromLatLonInMeters(
+          coords[i][1], coords[i][0],
+          coords[i + 1][1], coords[i + 1][0]
+        );
+      }
+      total += Math.floor(lineLength / spotFootprint);
+    }
+  });
+  return total;
+}
+
 // Sample parking locations data
 // Sample parking locations data
 const parkingLocations = [
@@ -50,8 +89,8 @@ const parkingLocations = [
     city: 'Baghdad',
     latitude: 33.315200,
     longitude: 44.366100,
-    totalSpots: 2000,
-    jsonFile: 'mansour.json',
+    totalSpots: 0, // Calculated Dynamically
+    jsonFile: 'mansour_lines_v2.json', // NEW Geometry
     zoneGeoJson: {
       "type": "FeatureCollection",
       "features": [
@@ -128,7 +167,7 @@ const parkingLocations = [
     city: 'Baghdad',
     latitude: 33.334000,
     longitude: 44.325000,
-    totalSpots: 3000,
+    totalSpots: 3742,
     jsonFile: 'hai_al_jamia.json',
     zoneGeoJson: {
       "type": "FeatureCollection",
@@ -254,6 +293,11 @@ async function seedDatabase() {
             const rawData = fs.readFileSync(filePath, 'utf8');
             locationData.geoJson = JSON.parse(rawData);
             console.log(`   Found GeoJSON for ${locationData.name}`);
+
+            if (locationData.totalSpots === 0) {
+              locationData.totalSpots = calculateTotalSpots(locationData.geoJson);
+              console.log(`   --> Calculated ${locationData.totalSpots} spots dynamically from geometry.`);
+            }
           }
         } catch (e) {
           console.error(`   Failed to read GeoJSON for ${locationData.name}: ${e.message}`);

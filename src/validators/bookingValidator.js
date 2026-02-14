@@ -38,7 +38,14 @@ const validate = (req, res, next) => {
   next();
 };
 
+const extendBookingValidator = [
+  body('additionalHours')
+    .isFloat({ min: 0.5, max: 24 })
+    .withMessage('Additional hours must be between 0.5 and 24')
+];
+
 module.exports = {
   createBookingValidator,
+  extendBookingValidator,
   validate
 };

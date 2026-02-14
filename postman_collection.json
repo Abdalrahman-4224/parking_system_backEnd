@@ -568,21 +568,13 @@
         {
           "name": "Cancel Booking",
           "request": {
-            "method": "PUT",
+            "method": "PATCH",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
               {
                 "key": "Authorization",
                 "value": "Bearer {{token}}"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"bookingStatus\": \"cancelled\"\n}"
-            },
             "url": {
               "raw": "{{baseUrl}}/bookings/:id/cancel",
               "host": ["{{baseUrl}}"],
@@ -600,7 +592,7 @@
         {
           "name": "Complete Booking",
           "request": {
-            "method": "PUT",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Authorization",
@@ -619,6 +611,38 @@
               ]
             },
             "description": "Mark a booking as completed"
+          }
+        },
+        {
+          "name": "Extend Booking",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"additionalHours\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings/:id/extend",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", ":id", "extend"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "booking-uuid-here"
+                }
+              ]
+            },
+            "description": "Extend an active booking by additional hours"
           }
         }
       ]

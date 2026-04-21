@@ -16,8 +16,6 @@ function generateOTP(length = 6) {
 }
 
 async function sendOTP(phoneNumber, otpCode) {
-  const message = `Your parking system verification code is: ${otpCode}. Valid for 5 minutes. Do not share this code.`;
-
   try {
     if (process.env.NODE_ENV === 'development' && !process.env.TWILIO_ACCOUNT_SID) {
       console.log(`[DEV] WhatsApp OTP to ${phoneNumber}: ${otpCode}`);
@@ -25,8 +23,9 @@ async function sendOTP(phoneNumber, otpCode) {
     }
 
     const result = await twilioClient.messages.create({
-      body: message,
       from: process.env.TWILIO_WHATSAPP_FROM,
+      contentSid: process.env.TWILIO_CONTENT_SID,
+      contentVariables: JSON.stringify({ "1": otpCode }),
       to: `whatsapp:${phoneNumber}`
     });
 

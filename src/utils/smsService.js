@@ -1,11 +1,6 @@
 const crypto = require('crypto');
 const twilio = require('twilio');
 
-const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
-
 function generateOTP(length = 6) {
   const digits = '0123456789';
   let otp = '';
@@ -21,6 +16,11 @@ async function sendOTP(phoneNumber, otpCode) {
       console.log(`[DEV] WhatsApp OTP to ${phoneNumber}: ${otpCode}`);
       return { success: true, messageId: 'dev-' + Date.now(), provider: 'console' };
     }
+
+    const twilioClient = twilio(
+      process.env.TWILIO_ACCOUNT_SID,
+      process.env.TWILIO_AUTH_TOKEN
+    );
 
     const result = await twilioClient.messages.create({
       from: process.env.TWILIO_WHATSAPP_FROM,

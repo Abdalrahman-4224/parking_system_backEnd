@@ -24,8 +24,7 @@ async function sendOTP(phoneNumber, otpCode) {
 
     const result = await twilioClient.messages.create({
       from: process.env.TWILIO_WHATSAPP_FROM,
-      contentSid: process.env.TWILIO_CONTENT_SID,
-      contentVariables: JSON.stringify({ "1": otpCode }),
+      body: `*${otpCode}* is your verification code. For your security, do not share this code.`,
       to: `whatsapp:${phoneNumber}`
     });
 
